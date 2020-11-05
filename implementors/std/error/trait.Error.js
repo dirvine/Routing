@@ -1,3 +1,3 @@
 (function() {var implementors = {};
-implementors["routing"] = [{"text":"impl <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/std/error/trait.Error.html\" title=\"trait std::error::Error\">Error</a> for <a class=\"enum\" href=\"routing/enum.RoutingError.html\" title=\"enum routing::RoutingError\">RoutingError</a>","synthetic":false,"types":["routing::error::RoutingError"]}];
+implementors["sn_routing"] = [{"text":"impl Error for Error","synthetic":false,"types":[]}];
 if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()
