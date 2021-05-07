@@ -1,5 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/peer.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>peer.rs - source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script id="default-settings"></script><script src="../../storage.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="shortcut icon" href="https://maidsafe.net/img/favicon.ico"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../sn_routing/index.html'><div class='logo-container'><img src='https://raw.githubusercontent.com/maidsafe/QA/master/Images/maidsafe_logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><span class="help-button">?</span>
-                <a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1"> 1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/peer.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>peer.rs - source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script id="default-settings"></script><script src="../../storage.js"></script><script src="../../crates.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="shortcut icon" href="https://maidsafe.net/img/favicon.ico"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../sn_routing/index.html'><div class='logo-container'><img src='https://raw.githubusercontent.com/maidsafe/QA/master/Images/maidsafe_logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../brush.svg" width="18" height="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
+                <a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" height="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1"> 1</span>
 <span id="2"> 2</span>
 <span id="3"> 3</span>
 <span id="4"> 4</span>
@@ -90,6 +90,14 @@
 <span id="89">89</span>
 <span id="90">90</span>
 <span id="91">91</span>
+<span id="92">92</span>
+<span id="93">93</span>
+<span id="94">94</span>
+<span id="95">95</span>
+<span id="96">96</span>
+<span id="97">97</span>
+<span id="98">98</span>
+<span id="99">99</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">// Copyright 2020 MaidSafe.net limited.</span>
 <span class="comment">//</span>
@@ -105,7 +113,7 @@
     <span class="ident">hash</span>::<span class="ident">Hash</span>,
     <span class="ident">net</span>::<span class="ident">SocketAddr</span>,
 };
-<span class="kw">use</span> <span class="ident">xor_name</span>::<span class="ident">XorName</span>;
+<span class="kw">use</span> <span class="ident">xor_name</span>::{<span class="ident">XorName</span>, <span class="ident">XOR_NAME_LEN</span>};
 
 <span class="doccomment">/// Network p2p peer identity.</span>
 <span class="doccomment">/// When a node knows another p2p_node as a `Peer` it&#39;s implicitly connected to it. This is separate</span>
@@ -114,13 +122,25 @@
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Peer</span> {
     <span class="ident">name</span>: <span class="ident">XorName</span>,
     <span class="ident">addr</span>: <span class="ident">SocketAddr</span>,
-    <span class="ident">age</span>: <span class="ident">u8</span>,
+    <span class="comment">// A node&#39;s connectivity will be checked when first time join the network or got relocated.</span>
+    <span class="comment">// An adult can only got promoted to elder when this flag is set to `true`.</span>
+    <span class="comment">// Taking a default of `false` to enforce the connectivity check.</span>
+    <span class="ident">reachable</span>: <span class="ident">bool</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">Peer</span> {
-    <span class="doccomment">/// Creates a new `Peer` given `Name`, `SocketAddr` and `age`.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">name</span>: <span class="ident">XorName</span>, <span class="ident">addr</span>: <span class="ident">SocketAddr</span>, <span class="ident">age</span>: <span class="ident">u8</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
-        <span class="self">Self</span> { <span class="ident">name</span>, <span class="ident">addr</span>, <span class="ident">age</span> }
+    <span class="doccomment">/// Creates a new `Peer` given `Name`, `SocketAddr`.</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">name</span>: <span class="ident">XorName</span>, <span class="ident">addr</span>: <span class="ident">SocketAddr</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+        <span class="self">Self</span> {
+            <span class="ident">name</span>,
+            <span class="ident">addr</span>,
+            <span class="ident">reachable</span>: <span class="bool-val">false</span>,
+        }
+    }
+
+    <span class="doccomment">/// Set the reachable flag.</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_reachable</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">reachable</span>: <span class="ident">bool</span>) {
+        <span class="self">self</span>.<span class="ident">reachable</span> <span class="op">=</span> <span class="ident">reachable</span>;
     }
 
     <span class="doccomment">/// Returns the `XorName` of the peer.</span>
@@ -135,20 +155,12 @@
 
     <span class="doccomment">/// Returns the age.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">age</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u8</span> {
-        <span class="self">self</span>.<span class="ident">age</span>
+        <span class="self">self</span>.<span class="ident">name</span>[<span class="ident">XOR_NAME_LEN</span> <span class="op">-</span> <span class="number">1</span>]
     }
 
-    <span class="comment">// Converts this info into one with the input age.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">with_age</span>(<span class="self">self</span>, <span class="ident">age</span>: <span class="ident">u8</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
-        <span class="self">Self</span> { <span class="ident">age</span>, ..<span class="self">self</span> }
-    }
-
-    <span class="comment">// Converts this info into one with the age increased by one.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">increment_age</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
-        <span class="self">Self</span> {
-            <span class="ident">age</span>: <span class="self">self</span>.<span class="ident">age</span>.<span class="ident">saturating_add</span>(<span class="number">1</span>),
-            ..<span class="self">self</span>
-        }
+    <span class="doccomment">/// Returns the reachable flag.</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_reachable</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+        <span class="self">self</span>.<span class="ident">reachable</span>
     }
 }
 
@@ -164,8 +176,8 @@
     <span class="kw">use</span> <span class="ident">proptest</span>::{<span class="ident">collection</span>::<span class="ident">SizeRange</span>, <span class="ident">prelude</span>::<span class="kw-2">*</span>};
     <span class="kw">use</span> <span class="ident">xor_name</span>::<span class="ident">XOR_NAME_LEN</span>;
 
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">arbitrary_xor_name</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="kw">impl</span> <span class="ident">Strategy</span><span class="op">&lt;</span><span class="ident">Value</span> <span class="op">=</span> <span class="ident">XorName</span><span class="op">&gt;</span> {
-        <span class="ident">any</span>::<span class="op">&lt;</span>[<span class="ident">u8</span>; <span class="ident">XOR_NAME_LEN</span>]<span class="op">&gt;</span>().<span class="ident">prop_map</span>(<span class="ident">XorName</span>)
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">arbitrary_bytes</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="kw">impl</span> <span class="ident">Strategy</span><span class="op">&lt;</span><span class="ident">Value</span> <span class="op">=</span> [<span class="ident">u8</span>; <span class="ident">XOR_NAME_LEN</span>]<span class="op">&gt;</span> {
+        <span class="ident">any</span>::<span class="op">&lt;</span>[<span class="ident">u8</span>; <span class="ident">XOR_NAME_LEN</span>]<span class="op">&gt;</span>()
     }
 
     <span class="comment">// Generate Vec&lt;Peer&gt; where no two peers have the same name.</span>
@@ -173,14 +185,19 @@
         <span class="ident">count</span>: <span class="kw">impl</span> <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">SizeRange</span><span class="op">&gt;</span>,
         <span class="ident">age</span>: <span class="kw">impl</span> <span class="ident">Strategy</span><span class="op">&lt;</span><span class="ident">Value</span> <span class="op">=</span> <span class="ident">u8</span><span class="op">&gt;</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="kw">impl</span> <span class="ident">Strategy</span><span class="op">&lt;</span><span class="ident">Value</span> <span class="op">=</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Peer</span><span class="op">&gt;</span><span class="op">&gt;</span> {
-        <span class="ident">proptest</span>::<span class="ident">collection</span>::<span class="ident">btree_map</span>(<span class="ident">arbitrary_xor_name</span>(), (<span class="ident">any</span>::<span class="op">&lt;</span><span class="ident">SocketAddr</span><span class="op">&gt;</span>(), <span class="ident">age</span>), <span class="ident">count</span>)
+        <span class="ident">proptest</span>::<span class="ident">collection</span>::<span class="ident">btree_map</span>(<span class="ident">arbitrary_bytes</span>(), (<span class="ident">any</span>::<span class="op">&lt;</span><span class="ident">SocketAddr</span><span class="op">&gt;</span>(), <span class="ident">age</span>), <span class="ident">count</span>)
             .<span class="ident">prop_map</span>(<span class="op">|</span><span class="ident">peers</span><span class="op">|</span> {
                 <span class="ident">peers</span>
                     .<span class="ident">into_iter</span>()
-                    .<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">name</span>, (<span class="ident">addr</span>, <span class="ident">age</span>))<span class="op">|</span> <span class="ident">Peer</span>::<span class="ident">new</span>(<span class="ident">name</span>, <span class="ident">addr</span>, <span class="ident">age</span>))
+                    .<span class="ident">map</span>(<span class="op">|</span>(<span class="kw-2">mut</span> <span class="ident">bytes</span>, (<span class="ident">addr</span>, <span class="ident">age</span>))<span class="op">|</span> {
+                        <span class="ident">bytes</span>[<span class="ident">XOR_NAME_LEN</span> <span class="op">-</span> <span class="number">1</span>] <span class="op">=</span> <span class="ident">age</span>;
+                        <span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="ident">XorName</span>(<span class="ident">bytes</span>);
+                        <span class="ident">Peer</span>::<span class="ident">new</span>(<span class="ident">name</span>, <span class="ident">addr</span>)
+                    })
                     .<span class="ident">collect</span>()
             })
     }
 }
 </pre></div>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../";window.currentCrate = "sn_routing";</script><script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script><script defer src="../../search-index.js"></script></body></html>
+</section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="sn_routing" data-search-js="../../search-index.js"></div>
+    <script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script></body></html>
