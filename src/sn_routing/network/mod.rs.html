@@ -302,106 +302,6 @@
 <span id="301">301</span>
 <span id="302">302</span>
 <span id="303">303</span>
-<span id="304">304</span>
-<span id="305">305</span>
-<span id="306">306</span>
-<span id="307">307</span>
-<span id="308">308</span>
-<span id="309">309</span>
-<span id="310">310</span>
-<span id="311">311</span>
-<span id="312">312</span>
-<span id="313">313</span>
-<span id="314">314</span>
-<span id="315">315</span>
-<span id="316">316</span>
-<span id="317">317</span>
-<span id="318">318</span>
-<span id="319">319</span>
-<span id="320">320</span>
-<span id="321">321</span>
-<span id="322">322</span>
-<span id="323">323</span>
-<span id="324">324</span>
-<span id="325">325</span>
-<span id="326">326</span>
-<span id="327">327</span>
-<span id="328">328</span>
-<span id="329">329</span>
-<span id="330">330</span>
-<span id="331">331</span>
-<span id="332">332</span>
-<span id="333">333</span>
-<span id="334">334</span>
-<span id="335">335</span>
-<span id="336">336</span>
-<span id="337">337</span>
-<span id="338">338</span>
-<span id="339">339</span>
-<span id="340">340</span>
-<span id="341">341</span>
-<span id="342">342</span>
-<span id="343">343</span>
-<span id="344">344</span>
-<span id="345">345</span>
-<span id="346">346</span>
-<span id="347">347</span>
-<span id="348">348</span>
-<span id="349">349</span>
-<span id="350">350</span>
-<span id="351">351</span>
-<span id="352">352</span>
-<span id="353">353</span>
-<span id="354">354</span>
-<span id="355">355</span>
-<span id="356">356</span>
-<span id="357">357</span>
-<span id="358">358</span>
-<span id="359">359</span>
-<span id="360">360</span>
-<span id="361">361</span>
-<span id="362">362</span>
-<span id="363">363</span>
-<span id="364">364</span>
-<span id="365">365</span>
-<span id="366">366</span>
-<span id="367">367</span>
-<span id="368">368</span>
-<span id="369">369</span>
-<span id="370">370</span>
-<span id="371">371</span>
-<span id="372">372</span>
-<span id="373">373</span>
-<span id="374">374</span>
-<span id="375">375</span>
-<span id="376">376</span>
-<span id="377">377</span>
-<span id="378">378</span>
-<span id="379">379</span>
-<span id="380">380</span>
-<span id="381">381</span>
-<span id="382">382</span>
-<span id="383">383</span>
-<span id="384">384</span>
-<span id="385">385</span>
-<span id="386">386</span>
-<span id="387">387</span>
-<span id="388">388</span>
-<span id="389">389</span>
-<span id="390">390</span>
-<span id="391">391</span>
-<span id="392">392</span>
-<span id="393">393</span>
-<span id="394">394</span>
-<span id="395">395</span>
-<span id="396">396</span>
-<span id="397">397</span>
-<span id="398">398</span>
-<span id="399">399</span>
-<span id="400">400</span>
-<span id="401">401</span>
-<span id="402">402</span>
-<span id="403">403</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">// Copyright 2020 MaidSafe.net limited.</span>
 <span class="comment">//</span>
@@ -411,68 +311,117 @@
 <span class="comment">// KIND, either express or implied. Please review the Licences for the specific language governing</span>
 <span class="comment">// permissions and limitations relating to use of the SAFE Network Software.</span>
 
-<span class="kw">mod</span> <span class="ident">prefix_map</span>;
+<span class="comment">// TODO: remove prefix_map from sn_messaging::node</span>
+<span class="comment">// mod prefix_map;</span>
 <span class="kw">mod</span> <span class="ident">stats</span>;
 
-<span class="kw">use</span> <span class="self">self</span>::{<span class="ident">prefix_map</span>::<span class="ident">PrefixMap</span>, <span class="ident">stats</span>::<span class="ident">NetworkStats</span>};
+<span class="kw">use</span> <span class="self">self</span>::<span class="ident">stats</span>::<span class="ident">NetworkStats</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::{
-    <span class="ident">agreement</span>::{<span class="ident">verify_proof</span>, <span class="ident">Proof</span>, <span class="ident">Proven</span>},
-    <span class="ident">peer</span>::<span class="ident">Peer</span>,
-    <span class="ident">section</span>::{<span class="ident">SectionAuthorityProvider</span>, <span class="ident">SectionChain</span>},
+    <span class="ident">agreement</span>::{<span class="ident">verify_signed</span>, <span class="ident">ProvenUtils</span>, <span class="ident">Signed</span>},
+    <span class="ident">peer</span>::<span class="ident">PeerUtils</span>,
+    <span class="ident">section</span>::<span class="ident">SectionAuthorityProviderUtils</span>,
+    <span class="ident">Error</span>, <span class="prelude-ty">Result</span>,
 };
 
-<span class="kw">use</span> <span class="ident">serde</span>::{<span class="ident">Deserialize</span>, <span class="ident">Serialize</span>};
-<span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">borrow</span>::<span class="ident">Borrow</span>, <span class="ident">iter</span>};
+<span class="kw">use</span> <span class="ident">secured_linked_list</span>::<span class="ident">SecuredLinkedList</span>;
+<span class="kw">use</span> <span class="ident">sn_messaging</span>::{
+    <span class="ident">node</span>::{<span class="ident">Network</span>, <span class="ident">OtherSection</span>, <span class="ident">Peer</span>, <span class="ident">PrefixMap</span>, <span class="ident">Proven</span>},
+    <span class="ident">SectionAuthorityProvider</span>,
+};
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">iter</span>;
 <span class="kw">use</span> <span class="ident">xor_name</span>::{<span class="ident">Prefix</span>, <span class="ident">XorName</span>};
 
-<span class="doccomment">/// Container for storing information about other sections in the network.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Debug</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">Hash</span>, <span class="ident">Serialize</span>, <span class="ident">Deserialize</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Network</span> {
-    <span class="comment">// Other sections: maps section prefixes to their latest signed section authority providers.</span>
-    <span class="ident">sections</span>: <span class="ident">PrefixMap</span><span class="op">&lt;</span><span class="ident">OtherSection</span><span class="op">&gt;</span>,
-    <span class="comment">// BLS public keys of known sections excluding ours.</span>
-    <span class="ident">keys</span>: <span class="ident">PrefixMap</span><span class="op">&lt;</span>(<span class="ident">Prefix</span>, <span class="ident">bls</span>::<span class="ident">PublicKey</span>)<span class="op">&gt;</span>,
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">NetworkUtils</span> {
+    <span class="kw">fn</span> <span class="ident">new</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>;
+
+    <span class="kw">fn</span> <span class="ident">closest</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">XorName</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">SectionAuthorityProvider</span><span class="op">&gt;</span>;
+
+    <span class="doccomment">/// Returns iterator over all known sections.</span>
+    <span class="kw">fn</span> <span class="ident">all</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">SectionAuthorityProvider</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;_</span><span class="op">&gt;</span>;
+
+    <span class="doccomment">/// Get `SectionAuthorityProvider` of a known section with the given prefix.</span>
+    <span class="kw">fn</span> <span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">prefix</span>: <span class="kw-2">&amp;</span><span class="ident">Prefix</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">SectionAuthorityProvider</span><span class="op">&gt;</span>;
+
+    <span class="doccomment">/// Returns all elders from all known sections.</span>
+    <span class="kw">fn</span> <span class="ident">elders</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;_</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">Peer</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;_</span><span class="op">&gt;</span>;
+
+    <span class="doccomment">/// Returns a `Peer` of an elder from a known section.</span>
+    <span class="kw">fn</span> <span class="ident">get_elder</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">XorName</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Peer</span><span class="op">&gt;</span>;
+
+    <span class="doccomment">/// Merge two `Network`s into one.</span>
+    <span class="doccomment">/// TODO: make this operation commutative, associative and idempotent (CRDT)</span>
+    <span class="doccomment">/// TODO: return bool indicating whether anything changed.</span>
+    <span class="kw">fn</span> <span class="ident">merge</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">other</span>: <span class="ident">Network</span>, <span class="ident">section_chain</span>: <span class="kw-2">&amp;</span><span class="ident">SecuredLinkedList</span>);
+
+    <span class="doccomment">/// Update the info about a section.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// If this is for our sibling section, then `section_auth` is signed by them and so the signing</span>
+    <span class="doccomment">/// key is not in our `section_chain`. To prove the key is valid, it must be accompanied by an</span>
+    <span class="doccomment">/// additional `key_signed` which signs it using a key that is present in `section_chain`.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// If this is for a non-sibling section, then currently we require the info to be signed by our</span>
+    <span class="doccomment">/// section (so we need to accumulate the signature for it first) and so `key_signed` is not</span>
+    <span class="doccomment">/// needed in that case.</span>
+    <span class="kw">fn</span> <span class="ident">update_section</span>(
+        <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>,
+        <span class="ident">section_auth</span>: <span class="ident">Proven</span><span class="op">&lt;</span><span class="ident">SectionAuthorityProvider</span><span class="op">&gt;</span>,
+        <span class="ident">key_signed</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Signed</span><span class="op">&gt;</span>,
+        <span class="ident">section_chain</span>: <span class="kw-2">&amp;</span><span class="ident">SecuredLinkedList</span>,
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span>;
+
+    <span class="doccomment">/// Returns the known section keys.</span>
+    <span class="kw">fn</span> <span class="ident">keys</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> (<span class="ident">Prefix</span>, <span class="ident">bls</span>::<span class="ident">PublicKey</span>)<span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;_</span><span class="op">&gt;</span>;
+
+    <span class="doccomment">/// Returns the latest known key for the prefix that matches `name`.</span>
+    <span class="kw">fn</span> <span class="ident">key_by_name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">XorName</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">bls</span>::<span class="ident">PublicKey</span><span class="op">&gt;</span>;
+
+    <span class="doccomment">/// Returns the latest known key for a section with `prefix`.</span>
+    <span class="doccomment">/// If this returns `None` that means the latest known key is the genesis key.</span>
+    <span class="kw">fn</span> <span class="ident">key_by_prefix</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">prefix</span>: <span class="kw-2">&amp;</span><span class="ident">Prefix</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">bls</span>::<span class="ident">PublicKey</span><span class="op">&gt;</span>;
+
+    <span class="doccomment">/// Returns the section_auth and the latest known key for the prefix that matches `name`,</span>
+    <span class="doccomment">/// excluding self section.</span>
+    <span class="kw">fn</span> <span class="ident">section_by_name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">XorName</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">SectionAuthorityProvider</span><span class="op">&gt;</span>;
+
+    <span class="doccomment">/// Returns network statistics.</span>
+    <span class="kw">fn</span> <span class="ident">network_stats</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">our</span>: <span class="kw-2">&amp;</span><span class="ident">SectionAuthorityProvider</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">NetworkStats</span>;
+
+    <span class="kw">fn</span> <span class="ident">network_elder_counts</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">our</span>: <span class="kw-2">&amp;</span><span class="ident">SectionAuthorityProvider</span>) <span class="op">-</span><span class="op">&gt;</span> (<span class="ident">u64</span>, <span class="ident">u64</span>, <span class="ident">bool</span>);
 }
 
-<span class="kw">impl</span> <span class="ident">Network</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+<span class="kw">impl</span> <span class="ident">NetworkUtils</span> <span class="kw">for</span> <span class="ident">Network</span> {
+    <span class="kw">fn</span> <span class="ident">new</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="self">Self</span> {
             <span class="ident">sections</span>: <span class="ident">PrefixMap</span>::<span class="ident">new</span>(),
-            <span class="ident">keys</span>: <span class="ident">PrefixMap</span>::<span class="ident">new</span>(),
         }
     }
 
     <span class="doccomment">/// Returns the known section that is closest to the given name, regardless of whether `name`</span>
     <span class="doccomment">/// belongs in that section or not.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">closest</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">XorName</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">SectionAuthorityProvider</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">closest</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">XorName</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">SectionAuthorityProvider</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">all</span>()
             .<span class="ident">min_by</span>(<span class="op">|</span><span class="ident">lhs</span>, <span class="ident">rhs</span><span class="op">|</span> <span class="ident">lhs</span>.<span class="ident">prefix</span>.<span class="ident">cmp_distance</span>(<span class="kw-2">&amp;</span><span class="ident">rhs</span>.<span class="ident">prefix</span>, <span class="ident">name</span>))
     }
 
     <span class="doccomment">/// Returns iterator over all known sections.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">all</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw">impl</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">SectionAuthorityProvider</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Clone</span> {
-        <span class="self">self</span>.<span class="ident">sections</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">info</span><span class="op">|</span> <span class="kw-2">&amp;</span><span class="ident">info</span>.<span class="ident">section_auth</span>.<span class="ident">value</span>)
+    <span class="kw">fn</span> <span class="ident">all</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">SectionAuthorityProvider</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;_</span><span class="op">&gt;</span> {
+        <span class="ident">Box</span>::<span class="ident">new</span>(<span class="self">self</span>.<span class="ident">sections</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">info</span><span class="op">|</span> <span class="kw-2">&amp;</span><span class="ident">info</span>.<span class="ident">section_auth</span>.<span class="ident">value</span>))
     }
 
     <span class="doccomment">/// Get `SectionAuthorityProvider` of a known section with the given prefix.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">prefix</span>: <span class="kw-2">&amp;</span><span class="ident">Prefix</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">SectionAuthorityProvider</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">prefix</span>: <span class="kw-2">&amp;</span><span class="ident">Prefix</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">SectionAuthorityProvider</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">sections</span>
             .<span class="ident">get</span>(<span class="ident">prefix</span>)
             .<span class="ident">map</span>(<span class="op">|</span><span class="ident">info</span><span class="op">|</span> <span class="kw-2">&amp;</span><span class="ident">info</span>.<span class="ident">section_auth</span>.<span class="ident">value</span>)
     }
 
-    <span class="doccomment">/// Returns prefixes of all known sections.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">prefixes</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw">impl</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">Prefix</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Clone</span> {
-        <span class="self">self</span>.<span class="ident">all</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">section_auth</span><span class="op">|</span> <span class="kw-2">&amp;</span><span class="ident">section_auth</span>.<span class="ident">prefix</span>)
-    }
-
     <span class="doccomment">/// Returns all elders from all known sections.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">elders</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;_</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw">impl</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">Peer</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;_</span> {
-        <span class="self">self</span>.<span class="ident">all</span>().<span class="ident">flat_map</span>(<span class="op">|</span><span class="ident">info</span><span class="op">|</span> <span class="ident">info</span>.<span class="ident">peers</span>())
+    <span class="kw">fn</span> <span class="ident">elders</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;_</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">Peer</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;_</span><span class="op">&gt;</span> {
+        <span class="ident">Box</span>::<span class="ident">new</span>(<span class="self">self</span>.<span class="ident">all</span>().<span class="ident">flat_map</span>(<span class="op">|</span><span class="ident">info</span><span class="op">|</span> <span class="ident">info</span>.<span class="ident">peers</span>()))
     }
 
     <span class="doccomment">/// Returns a `Peer` of an elder from a known section.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_elder</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">XorName</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Peer</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">get_elder</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">XorName</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Peer</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">sections</span>
             .<span class="ident">get_matching</span>(<span class="ident">name</span>)<span class="question-mark">?</span>
             .<span class="ident">section_auth</span>
@@ -488,7 +437,7 @@
     <span class="doccomment">/// Merge two `Network`s into one.</span>
     <span class="doccomment">/// TODO: make this operation commutative, associative and idempotent (CRDT)</span>
     <span class="doccomment">/// TODO: return bool indicating whether anything changed.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">merge</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">other</span>: <span class="self">Self</span>, <span class="ident">section_chain</span>: <span class="kw-2">&amp;</span><span class="ident">SectionChain</span>) {
+    <span class="kw">fn</span> <span class="ident">merge</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">other</span>: <span class="ident">Network</span>, <span class="ident">section_chain</span>: <span class="kw-2">&amp;</span><span class="ident">SecuredLinkedList</span>) {
         <span class="comment">// FIXME: these operations are not commutative:</span>
 
         <span class="kw">for</span> <span class="ident">entry</span> <span class="kw">in</span> <span class="ident">other</span>.<span class="ident">sections</span> {
@@ -496,30 +445,26 @@
                 <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">sections</span>.<span class="ident">insert</span>(<span class="ident">entry</span>);
             }
         }
-
-        <span class="kw">for</span> <span class="ident">entry</span> <span class="kw">in</span> <span class="ident">other</span>.<span class="ident">keys</span> {
-            <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">keys</span>.<span class="ident">insert</span>(<span class="ident">entry</span>);
-        }
     }
 
     <span class="doccomment">/// Update the info about a section.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// If this is for our sibling section, then `section_auth` is signed by them and so the signing</span>
     <span class="doccomment">/// key is not in our `section_chain`. To prove the key is valid, it must be accompanied by an</span>
-    <span class="doccomment">/// additional `key_proof` which signs it using a key that is present in `section_chain`.</span>
+    <span class="doccomment">/// additional `key_signed` which signs it using a key that is present in `section_chain`.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// If this is for a non-sibling section, then currently we require the info to be signed by our</span>
-    <span class="doccomment">/// section (so we need to accumulate the signature for it first) and so `key_proof` is not</span>
+    <span class="doccomment">/// section (so we need to accumulate the signature for it first) and so `key_signed` is not</span>
     <span class="doccomment">/// needed in that case.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">update_section</span>(
+    <span class="kw">fn</span> <span class="ident">update_section</span>(
         <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>,
         <span class="ident">section_auth</span>: <span class="ident">Proven</span><span class="op">&lt;</span><span class="ident">SectionAuthorityProvider</span><span class="op">&gt;</span>,
-        <span class="ident">key_proof</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Proof</span><span class="op">&gt;</span>,
-        <span class="ident">section_chain</span>: <span class="kw-2">&amp;</span><span class="ident">SectionChain</span>,
+        <span class="ident">key_signed</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Signed</span><span class="op">&gt;</span>,
+        <span class="ident">section_chain</span>: <span class="kw-2">&amp;</span><span class="ident">SecuredLinkedList</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
         <span class="kw">let</span> <span class="ident">info</span> <span class="op">=</span> <span class="ident">OtherSection</span> {
             <span class="ident">section_auth</span>: <span class="ident">section_auth</span>.<span class="ident">clone</span>(),
-            <span class="ident">key_proof</span>,
+            <span class="ident">key_signed</span>,
         };
 
         <span class="kw">if</span> <span class="op">!</span><span class="ident">info</span>.<span class="ident">verify</span>(<span class="ident">section_chain</span>) {
@@ -535,61 +480,43 @@
         <span class="bool-val">true</span>
     }
 
-    <span class="doccomment">/// Updates the entry in `keys` for `prefix` to the latest known key.</span>
-    <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">unused</span>)]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">update_their_key</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">new_key</span>: (<span class="ident">Prefix</span>, <span class="ident">bls</span>::<span class="ident">PublicKey</span>)) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
-        <span class="comment">// TODO: verify against section chain</span>
-
-        <span class="macro">trace</span><span class="macro">!</span>(<span class="string">&quot;update key for {:?}: {:?}&quot;</span>, <span class="ident">new_key</span>.<span class="number">0</span>, <span class="ident">new_key</span>.<span class="number">1</span>);
-
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">old</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">keys</span>.<span class="ident">insert</span>(<span class="ident">new_key</span>) {
-            <span class="kw">if</span> <span class="ident">old</span> <span class="op">=</span><span class="op">=</span> <span class="ident">new_key</span> {
-                <span class="kw">return</span> <span class="bool-val">false</span>;
-            }
-        }
-
-        <span class="bool-val">true</span>
-    }
-
     <span class="doccomment">/// Returns the known section keys.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">keys</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw">impl</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> (<span class="kw-2">&amp;</span><span class="ident">Prefix</span>, <span class="kw-2">&amp;</span><span class="ident">bls</span>::<span class="ident">PublicKey</span>)<span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">keys</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">entry</span><span class="op">|</span> (<span class="kw-2">&amp;</span><span class="ident">entry</span>.<span class="number">0</span>, <span class="kw-2">&amp;</span><span class="ident">entry</span>.<span class="number">1</span>))
-    }
-
-    <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">unused</span>)]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">has_key</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">key</span>: <span class="kw-2">&amp;</span><span class="ident">bls</span>::<span class="ident">PublicKey</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
-        <span class="self">self</span>.<span class="ident">keys</span>.<span class="ident">iter</span>().<span class="ident">any</span>(<span class="op">|</span><span class="ident">entry</span><span class="op">|</span> <span class="ident">entry</span>.<span class="number">1</span> <span class="op">=</span><span class="op">=</span> <span class="kw-2">*</span><span class="ident">key</span>)
+    <span class="kw">fn</span> <span class="ident">keys</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> (<span class="ident">Prefix</span>, <span class="ident">bls</span>::<span class="ident">PublicKey</span>)<span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;_</span><span class="op">&gt;</span> {
+        <span class="ident">Box</span>::<span class="ident">new</span>(<span class="self">self</span>.<span class="ident">sections</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">entry</span><span class="op">|</span> {
+            (
+                <span class="ident">entry</span>.<span class="ident">section_auth</span>.<span class="ident">value</span>.<span class="ident">prefix</span>,
+                <span class="ident">entry</span>.<span class="ident">section_auth</span>.<span class="ident">value</span>.<span class="ident">section_key</span>(),
+            )
+        }))
     }
 
     <span class="doccomment">/// Returns the latest known key for the prefix that matches `name`.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">key_by_name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">XorName</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">bls</span>::<span class="ident">PublicKey</span><span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">keys</span>.<span class="ident">get_matching</span>(<span class="ident">name</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">entry</span><span class="op">|</span> <span class="kw-2">&amp;</span><span class="ident">entry</span>.<span class="number">1</span>)
+    <span class="kw">fn</span> <span class="ident">key_by_name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">XorName</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">bls</span>::<span class="ident">PublicKey</span><span class="op">&gt;</span> {
+        <span class="self">self</span>.<span class="ident">sections</span>
+            .<span class="ident">get_matching</span>(<span class="ident">name</span>)
+            .<span class="ident">ok_or</span>(<span class="ident">Error</span>::<span class="ident">NoMatchingSection</span>)
+            .<span class="ident">map</span>(<span class="op">|</span><span class="ident">entry</span><span class="op">|</span> <span class="ident">entry</span>.<span class="ident">section_auth</span>.<span class="ident">value</span>.<span class="ident">section_key</span>())
     }
 
     <span class="doccomment">/// Returns the latest known key for a section with `prefix`.</span>
     <span class="doccomment">/// If this returns `None` that means the latest known key is the genesis key.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">key_by_prefix</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">prefix</span>: <span class="kw-2">&amp;</span><span class="ident">Prefix</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">bls</span>::<span class="ident">PublicKey</span><span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">keys</span>
+    <span class="kw">fn</span> <span class="ident">key_by_prefix</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">prefix</span>: <span class="kw-2">&amp;</span><span class="ident">Prefix</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">bls</span>::<span class="ident">PublicKey</span><span class="op">&gt;</span> {
+        <span class="self">self</span>.<span class="ident">sections</span>
             .<span class="ident">get_equal_or_ancestor</span>(<span class="ident">prefix</span>)
-            .<span class="ident">map</span>(<span class="op">|</span><span class="ident">entry</span><span class="op">|</span> <span class="kw-2">&amp;</span><span class="ident">entry</span>.<span class="number">1</span>)
+            .<span class="ident">map</span>(<span class="op">|</span><span class="ident">entry</span><span class="op">|</span> <span class="ident">entry</span>.<span class="ident">section_auth</span>.<span class="ident">value</span>.<span class="ident">section_key</span>())
     }
 
     <span class="doccomment">/// Returns the section_auth and the latest known key for the prefix that matches `name`,</span>
     <span class="doccomment">/// excluding self section.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">section_by_name</span>(
-        <span class="kw-2">&amp;</span><span class="self">self</span>,
-        <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">XorName</span>,
-    ) <span class="op">-</span><span class="op">&gt;</span> (<span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">bls</span>::<span class="ident">PublicKey</span><span class="op">&gt;</span>, <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">SectionAuthorityProvider</span><span class="op">&gt;</span>) {
-        (
-            <span class="self">self</span>.<span class="ident">keys</span>.<span class="ident">get_matching</span>(<span class="ident">name</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">entry</span><span class="op">|</span> <span class="kw-2">&amp;</span><span class="ident">entry</span>.<span class="number">1</span>),
-            <span class="self">self</span>.<span class="ident">sections</span>
-                .<span class="ident">get_matching</span>(<span class="ident">name</span>)
-                .<span class="ident">map</span>(<span class="op">|</span><span class="ident">entry</span><span class="op">|</span> <span class="kw-2">&amp;</span><span class="ident">entry</span>.<span class="ident">section_auth</span>.<span class="ident">value</span>),
-        )
+    <span class="kw">fn</span> <span class="ident">section_by_name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">XorName</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">SectionAuthorityProvider</span><span class="op">&gt;</span> {
+        <span class="self">self</span>.<span class="ident">sections</span>
+            .<span class="ident">get_matching</span>(<span class="ident">name</span>)
+            .<span class="ident">ok_or</span>(<span class="ident">Error</span>::<span class="ident">NoMatchingSection</span>)
+            .<span class="ident">map</span>(<span class="op">|</span><span class="ident">value</span><span class="op">|</span> <span class="ident">value</span>.<span class="ident">section_auth</span>.<span class="ident">value</span>.<span class="ident">clone</span>())
     }
 
     <span class="doccomment">/// Returns network statistics.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">network_stats</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">our</span>: <span class="kw-2">&amp;</span><span class="ident">SectionAuthorityProvider</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">NetworkStats</span> {
+    <span class="kw">fn</span> <span class="ident">network_stats</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">our</span>: <span class="kw-2">&amp;</span><span class="ident">SectionAuthorityProvider</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">NetworkStats</span> {
         <span class="kw">let</span> (<span class="ident">known_elders</span>, <span class="ident">total_elders</span>, <span class="ident">total_elders_exact</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">network_elder_counts</span>(<span class="ident">our</span>);
 
         <span class="ident">NetworkStats</span> {
@@ -605,7 +532,11 @@
     <span class="comment">// Return (known, total, exact), where `exact` indicates whether `total` is an exact number of</span>
     <span class="comment">// an estimate.</span>
     <span class="kw">fn</span> <span class="ident">network_elder_counts</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">our</span>: <span class="kw-2">&amp;</span><span class="ident">SectionAuthorityProvider</span>) <span class="op">-</span><span class="op">&gt;</span> (<span class="ident">u64</span>, <span class="ident">u64</span>, <span class="ident">bool</span>) {
-        <span class="kw">let</span> <span class="ident">known_prefixes</span> <span class="op">=</span> <span class="ident">iter</span>::<span class="ident">once</span>(<span class="kw-2">&amp;</span><span class="ident">our</span>.<span class="ident">prefix</span>).<span class="ident">chain</span>(<span class="self">self</span>.<span class="ident">prefixes</span>());
+        <span class="kw">let</span> <span class="ident">known_prefixes</span> <span class="op">=</span> <span class="ident">iter</span>::<span class="ident">once</span>(<span class="kw-2">&amp;</span><span class="ident">our</span>.<span class="ident">prefix</span>).<span class="ident">chain</span>(
+            <span class="self">self</span>.<span class="ident">sections</span>
+                .<span class="ident">iter</span>()
+                .<span class="ident">map</span>(<span class="op">|</span><span class="ident">info</span><span class="op">|</span> <span class="kw-2">&amp;</span><span class="ident">info</span>.<span class="ident">section_auth</span>.<span class="ident">value</span>.<span class="ident">prefix</span>),
+        );
         <span class="kw">let</span> <span class="ident">is_exact</span> <span class="op">=</span> <span class="ident">Prefix</span>::<span class="ident">default</span>().<span class="ident">is_covered_by</span>(<span class="ident">known_prefixes</span>.<span class="ident">clone</span>());
 
         <span class="comment">// Estimated fraction of the network that we have in our RT.</span>
@@ -621,30 +552,19 @@
     }
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>, <span class="ident">Hash</span>, <span class="ident">Debug</span>, <span class="ident">Serialize</span>, <span class="ident">Deserialize</span>)]</span>
-<span class="kw">struct</span> <span class="ident">OtherSection</span> {
-    <span class="comment">// If this is signed by our section, then `key_proof` is `None`. If this is signed by our</span>
-    <span class="comment">// sibling section, then `key_proof` contains the proof of the signing key itself signed by our</span>
-    <span class="comment">// section.</span>
-    <span class="ident">section_auth</span>: <span class="ident">Proven</span><span class="op">&lt;</span><span class="ident">SectionAuthorityProvider</span><span class="op">&gt;</span>,
-    <span class="ident">key_proof</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Proof</span><span class="op">&gt;</span>,
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">OtherSectionUtils</span> {
+    <span class="kw">fn</span> <span class="ident">verify</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">section_chain</span>: <span class="kw-2">&amp;</span><span class="ident">SecuredLinkedList</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span>;
 }
 
-<span class="kw">impl</span> <span class="ident">OtherSection</span> {
-    <span class="kw">fn</span> <span class="ident">verify</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">section_chain</span>: <span class="kw-2">&amp;</span><span class="ident">SectionChain</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">key_proof</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">key_proof</span> {
-            <span class="ident">section_chain</span>.<span class="ident">has_key</span>(<span class="kw-2">&amp;</span><span class="ident">key_proof</span>.<span class="ident">public_key</span>)
-                <span class="op">&amp;&amp;</span> <span class="ident">verify_proof</span>(<span class="ident">key_proof</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">section_auth</span>.<span class="ident">proof</span>.<span class="ident">public_key</span>)
+<span class="kw">impl</span> <span class="ident">OtherSectionUtils</span> <span class="kw">for</span> <span class="ident">OtherSection</span> {
+    <span class="kw">fn</span> <span class="ident">verify</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">section_chain</span>: <span class="kw-2">&amp;</span><span class="ident">SecuredLinkedList</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">key_signed</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">key_signed</span> {
+            <span class="ident">section_chain</span>.<span class="ident">has_key</span>(<span class="kw-2">&amp;</span><span class="ident">key_signed</span>.<span class="ident">public_key</span>)
+                <span class="op">&amp;&amp;</span> <span class="ident">verify_signed</span>(<span class="ident">key_signed</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">section_auth</span>.<span class="ident">signed</span>.<span class="ident">public_key</span>)
                 <span class="op">&amp;&amp;</span> <span class="self">self</span>.<span class="ident">section_auth</span>.<span class="ident">self_verify</span>()
         } <span class="kw">else</span> {
             <span class="self">self</span>.<span class="ident">section_auth</span>.<span class="ident">verify</span>(<span class="ident">section_chain</span>)
         }
-    }
-}
-
-<span class="kw">impl</span> <span class="ident">Borrow</span><span class="op">&lt;</span><span class="ident">Prefix</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">OtherSection</span> {
-    <span class="kw">fn</span> <span class="ident">borrow</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">Prefix</span> {
-        <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">section_auth</span>.<span class="ident">value</span>.<span class="ident">prefix</span>
     }
 }
 
@@ -655,99 +575,9 @@
     <span class="kw">use</span> <span class="ident">rand</span>::<span class="ident">Rng</span>;
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">update_keys_single_prefix_multiple_updates</span>() {
-        <span class="kw">let</span> <span class="ident">k0</span> <span class="op">=</span> <span class="ident">gen_key</span>();
-        <span class="kw">let</span> <span class="ident">k1</span> <span class="op">=</span> <span class="ident">gen_key</span>();
-        <span class="kw">let</span> <span class="ident">k2</span> <span class="op">=</span> <span class="ident">gen_key</span>();
-
-        <span class="ident">update_keys_and_check</span>(<span class="macro">vec</span><span class="macro">!</span>[(<span class="string">&quot;1&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">k0</span>), (<span class="string">&quot;1&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">k1</span>), (<span class="string">&quot;1&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">k2</span>)], <span class="macro">vec</span><span class="macro">!</span>[(<span class="string">&quot;1&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">k2</span>)]);
-    }
-
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">update_keys_existing_old_key</span>() {
-        <span class="kw">let</span> <span class="ident">k0</span> <span class="op">=</span> <span class="ident">gen_key</span>();
-        <span class="kw">let</span> <span class="ident">k1</span> <span class="op">=</span> <span class="ident">gen_key</span>();
-
-        <span class="ident">update_keys_and_check</span>(<span class="macro">vec</span><span class="macro">!</span>[(<span class="string">&quot;1&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">k0</span>), (<span class="string">&quot;1&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">k1</span>), (<span class="string">&quot;1&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">k0</span>)], <span class="macro">vec</span><span class="macro">!</span>[(<span class="string">&quot;1&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">k0</span>)]);
-    }
-
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">update_keys_complete_split</span>() {
-        <span class="kw">let</span> <span class="ident">k0</span> <span class="op">=</span> <span class="ident">gen_key</span>();
-        <span class="kw">let</span> <span class="ident">k1</span> <span class="op">=</span> <span class="ident">gen_key</span>();
-        <span class="kw">let</span> <span class="ident">k2</span> <span class="op">=</span> <span class="ident">gen_key</span>();
-
-        <span class="ident">update_keys_and_check</span>(
-            <span class="macro">vec</span><span class="macro">!</span>[(<span class="string">&quot;1&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">k0</span>), (<span class="string">&quot;10&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">k1</span>), (<span class="string">&quot;11&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">k2</span>)],
-            <span class="macro">vec</span><span class="macro">!</span>[(<span class="string">&quot;10&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">k1</span>), (<span class="string">&quot;11&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">k2</span>)],
-        );
-    }
-
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">update_keys_partial_split</span>() {
-        <span class="kw">let</span> <span class="ident">k0</span> <span class="op">=</span> <span class="ident">gen_key</span>();
-        <span class="kw">let</span> <span class="ident">k1</span> <span class="op">=</span> <span class="ident">gen_key</span>();
-
-        <span class="ident">update_keys_and_check</span>(<span class="macro">vec</span><span class="macro">!</span>[(<span class="string">&quot;1&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">k0</span>), (<span class="string">&quot;10&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">k1</span>)], <span class="macro">vec</span><span class="macro">!</span>[(<span class="string">&quot;1&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">k0</span>), (<span class="string">&quot;10&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">k1</span>)]);
-    }
-
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">update_keys_indirect_complete_split</span>() {
-        <span class="kw">let</span> <span class="ident">k0</span> <span class="op">=</span> <span class="ident">gen_key</span>();
-        <span class="kw">let</span> <span class="ident">k1</span> <span class="op">=</span> <span class="ident">gen_key</span>();
-        <span class="kw">let</span> <span class="ident">k2</span> <span class="op">=</span> <span class="ident">gen_key</span>();
-        <span class="kw">let</span> <span class="ident">k3</span> <span class="op">=</span> <span class="ident">gen_key</span>();
-        <span class="kw">let</span> <span class="ident">k4</span> <span class="op">=</span> <span class="ident">gen_key</span>();
-
-        <span class="ident">update_keys_and_check</span>(
-            <span class="macro">vec</span><span class="macro">!</span>[
-                (<span class="string">&quot;1&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">k0</span>),
-                (<span class="string">&quot;100&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">k1</span>),
-                (<span class="string">&quot;101&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">k2</span>),
-                (<span class="string">&quot;110&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">k3</span>),
-                (<span class="string">&quot;111&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">k4</span>),
-            ],
-            <span class="macro">vec</span><span class="macro">!</span>[(<span class="string">&quot;100&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">k1</span>), (<span class="string">&quot;101&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">k2</span>), (<span class="string">&quot;110&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">k3</span>), (<span class="string">&quot;111&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">k4</span>)],
-        );
-    }
-
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">update_keys_indirect_partial_split</span>() {
-        <span class="kw">let</span> <span class="ident">k0</span> <span class="op">=</span> <span class="ident">gen_key</span>();
-        <span class="kw">let</span> <span class="ident">k1</span> <span class="op">=</span> <span class="ident">gen_key</span>();
-        <span class="kw">let</span> <span class="ident">k2</span> <span class="op">=</span> <span class="ident">gen_key</span>();
-
-        <span class="ident">update_keys_and_check</span>(
-            <span class="macro">vec</span><span class="macro">!</span>[(<span class="string">&quot;1&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">k0</span>), (<span class="string">&quot;100&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">k1</span>), (<span class="string">&quot;101&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">k2</span>)],
-            <span class="macro">vec</span><span class="macro">!</span>[(<span class="string">&quot;1&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">k0</span>), (<span class="string">&quot;100&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">k1</span>), (<span class="string">&quot;101&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">k2</span>)],
-        );
-    }
-
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">update_keys_split_out_of_order</span>() {
-        <span class="kw">let</span> <span class="ident">k0</span> <span class="op">=</span> <span class="ident">gen_key</span>();
-        <span class="kw">let</span> <span class="ident">k1</span> <span class="op">=</span> <span class="ident">gen_key</span>();
-        <span class="kw">let</span> <span class="ident">k2</span> <span class="op">=</span> <span class="ident">gen_key</span>();
-        <span class="kw">let</span> <span class="ident">k3</span> <span class="op">=</span> <span class="ident">gen_key</span>();
-        <span class="kw">let</span> <span class="ident">k4</span> <span class="op">=</span> <span class="ident">gen_key</span>();
-
-        <span class="comment">// Late keys ignored</span>
-        <span class="ident">update_keys_and_check</span>(
-            <span class="macro">vec</span><span class="macro">!</span>[
-                (<span class="string">&quot;1&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">k0</span>),
-                (<span class="string">&quot;10&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">k1</span>),
-                (<span class="string">&quot;11&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">k2</span>),
-                (<span class="string">&quot;101&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">k3</span>),
-                (<span class="string">&quot;10&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">k4</span>),
-            ],
-            <span class="macro">vec</span><span class="macro">!</span>[(<span class="string">&quot;10&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">k1</span>), (<span class="string">&quot;101&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">k3</span>), (<span class="string">&quot;11&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">k2</span>)],
-        );
-    }
-
-    <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">closest</span>() {
         <span class="kw">let</span> <span class="ident">sk</span> <span class="op">=</span> <span class="ident">bls</span>::<span class="ident">SecretKey</span>::<span class="ident">random</span>();
-        <span class="kw">let</span> <span class="ident">chain</span> <span class="op">=</span> <span class="ident">SectionChain</span>::<span class="ident">new</span>(<span class="ident">sk</span>.<span class="ident">public_key</span>());
+        <span class="kw">let</span> <span class="ident">chain</span> <span class="op">=</span> <span class="ident">SecuredLinkedList</span>::<span class="ident">new</span>(<span class="ident">sk</span>.<span class="ident">public_key</span>());
 
         <span class="kw">let</span> <span class="ident">p01</span>: <span class="ident">Prefix</span> <span class="op">=</span> <span class="string">&quot;01&quot;</span>.<span class="ident">parse</span>().<span class="ident">unwrap</span>();
         <span class="kw">let</span> <span class="ident">p10</span>: <span class="ident">Prefix</span> <span class="op">=</span> <span class="string">&quot;10&quot;</span>.<span class="ident">parse</span>().<span class="ident">unwrap</span>();
@@ -768,42 +598,12 @@
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">map</span>.<span class="ident">closest</span>(<span class="kw-2">&amp;</span><span class="ident">n11</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">i</span><span class="op">|</span> <span class="kw-2">&amp;</span><span class="ident">i</span>.<span class="ident">prefix</span>), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">p10</span>));
     }
 
-    <span class="comment">// Create a `Network` and apply a series of `update_keys` calls to it, then verify the stored</span>
-    <span class="comment">// keys are as expected.</span>
-    <span class="comment">//</span>
-    <span class="comment">// updates:  updates to `Network::keys` as a sequence of (prefix, key) pairs that are</span>
-    <span class="comment">//           applied in sequence by calling `update_keys`</span>
-    <span class="comment">// expected: vec of pairs (prefix, key) of the expected keys for each prefix, in the expected</span>
-    <span class="comment">//           order.</span>
-    <span class="kw">fn</span> <span class="ident">update_keys_and_check</span>(
-        <span class="ident">updates</span>: <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="kw-2">&amp;</span><span class="ident">bls</span>::<span class="ident">PublicKey</span>)<span class="op">&gt;</span>,
-        <span class="ident">expected</span>: <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="kw-2">&amp;</span><span class="ident">bls</span>::<span class="ident">PublicKey</span>)<span class="op">&gt;</span>,
-    ) {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">map</span> <span class="op">=</span> <span class="ident">Network</span>::<span class="ident">new</span>();
-
-        <span class="kw">for</span> (<span class="ident">prefix</span>, <span class="ident">key</span>) <span class="kw">in</span> <span class="ident">updates</span> {
-            <span class="kw">let</span> <span class="ident">prefix</span> <span class="op">=</span> <span class="ident">prefix</span>.<span class="ident">parse</span>().<span class="ident">unwrap</span>();
-            <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">map</span>.<span class="ident">update_their_key</span>((<span class="ident">prefix</span>, <span class="kw-2">*</span><span class="ident">key</span>));
-        }
-
-        <span class="kw">let</span> <span class="ident">actual</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">map</span>.<span class="ident">keys</span>().<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">prefix</span>, <span class="ident">key</span>)<span class="op">|</span> (<span class="kw-2">*</span><span class="ident">prefix</span>, <span class="ident">key</span>)).<span class="ident">collect</span>();
-        <span class="kw">let</span> <span class="ident">expected</span>: <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">Prefix</span>, <span class="kw">_</span>)<span class="op">&gt;</span> <span class="op">=</span> <span class="ident">expected</span>
-            .<span class="ident">into_iter</span>()
-            .<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">prefix</span>, <span class="ident">key</span>)<span class="op">|</span> (<span class="ident">prefix</span>.<span class="ident">parse</span>().<span class="ident">unwrap</span>(), <span class="ident">key</span>))
-            .<span class="ident">collect</span>();
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">actual</span>, <span class="ident">expected</span>);
-    }
-
     <span class="kw">fn</span> <span class="ident">gen_proven_section_auth</span>(
         <span class="ident">sk</span>: <span class="kw-2">&amp;</span><span class="ident">bls</span>::<span class="ident">SecretKey</span>,
         <span class="ident">prefix</span>: <span class="ident">Prefix</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Proven</span><span class="op">&lt;</span><span class="ident">SectionAuthorityProvider</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> (<span class="ident">section_auth</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">section</span>::<span class="ident">test_utils</span>::<span class="ident">gen_section_authority_provider</span>(<span class="ident">prefix</span>, <span class="number">5</span>);
+        <span class="kw">let</span> (<span class="ident">section_auth</span>, <span class="kw">_</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">section</span>::<span class="ident">test_utils</span>::<span class="ident">gen_section_authority_provider</span>(<span class="ident">prefix</span>, <span class="number">5</span>);
         <span class="ident">agreement</span>::<span class="ident">test_utils</span>::<span class="ident">proven</span>(<span class="ident">sk</span>, <span class="ident">section_auth</span>).<span class="ident">unwrap</span>()
-    }
-
-    <span class="kw">fn</span> <span class="ident">gen_key</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bls</span>::<span class="ident">PublicKey</span> {
-        <span class="ident">bls</span>::<span class="ident">SecretKey</span>::<span class="ident">random</span>().<span class="ident">public_key</span>()
     }
 }
 </pre></div>
