@@ -11,7 +11,7 @@ mod utils;
 use anyhow::{Error, Result};
 use ed25519_dalek::Keypair;
 use futures::future;
-use sn_routing::{Config, Event, NodeElderChange, ELDER_SIZE};
+use sn_routing::{Config, ELDER_SIZEi, Error::ConnectionClosed, Event, NodeElderChange};
 use std::collections::HashSet;
 use tokio::time;
 use utils::*;
@@ -112,8 +112,7 @@ async fn test_startup_section_bootstrapping() -> Result<()> {
             return Ok(());
         }
     }
-
-    panic!("event stream unexpectedly closed")
+    Err(ConnectionClosed)
 }
 
 // Test that the first `ELDER_SIZE` nodes in the network are promoted to elders.

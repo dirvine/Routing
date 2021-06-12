@@ -658,6 +658,7 @@ mod tests {
             {
                 0 => {}
                 1 => return,
+                // nosemgrep
                 _ => panic!("inconsistent DKG outcomes"),
             }
 
@@ -717,6 +718,7 @@ mod tests {
                 DkgCommand::ScheduleTimeout { .. } => vec![],
                 DkgCommand::SendFailureObservation { .. }
                 | DkgCommand::HandleFailureAgreement { .. } => {
+                    // nosemgrep
                     panic!("unexpected command: {:?}", command)
                 }
             }
